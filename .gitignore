@@ -1,2 +1,8 @@
+# NPM dependencies
+node_modules
+
+# LND proto file
+src/rpc.proto
+
 # JetBrains
 .idea/

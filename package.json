@@ -1,0 +1,23 @@
+{
+  "name": "lncall",
+  "version": "1.0.0",
+  "description": "paypercall for LND ",
+  "main": "src/lncall.js",
+  "scripts": {
+    "getproto": "curl https://raw.githubusercontent.com/lightningnetwork/lnd/6fa93a78c18180a3bc77116b749b3c5e279d5a33/lnrpc/rpc.proto --output src/rpc.proto",
+    "start": "node src/lncall.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michael1011/lncall.git"
+  },
+  "author": "michael1011",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michael1011/lncall/issues"
+  },
+  "homepage": "https://github.com/michael1011/lncall#readme",
+  "dependencies": {
+    "grpc": "^1.10.1"
+  }
+}
