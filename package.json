@@ -19,5 +19,8 @@
   "homepage": "https://github.com/michael1011/lncall#readme",
   "dependencies": {
     "grpc": "^1.10.1"
+  },
+  "devDependencies": {
+    "express": "^4.16.3"
   }
 }

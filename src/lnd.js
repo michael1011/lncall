@@ -1,14 +1,12 @@
 "use strict";
 
-const grpc = require("grpc");
 const fs = require("fs");
-
-const os = require("os");
-const path = require("path");
+const grpc = require("grpc");
 
 process.env.GRPC_SSL_CIPHER_SUITES = "HIGH+ECDSA";
 
 class Lightning {
+
     constructor (grpcHost, cert, macaroon) {
         this.grpcHost = grpcHost;
         this.cert = cert;
@@ -17,7 +15,7 @@ class Lightning {
         this.meta = new grpc.Metadata();
     }
 
-    async connect() {
+    connect() {
         let macaroonFile = fs.readFileSync(this.macaroon);
 
         this.meta.add("macaroon", macaroonFile.toString("hex"));
@@ -41,19 +39,14 @@ class Lightning {
 
     }
 
-    subscribeInvoices(callback) {
-        let call = this.lightning.SubscribeInvoices({}, this.meta);
+    lookupInvoice(hash, callback) {
+        this.lightning.LookupInvoice({
+            r_hash: hash,
 
-        call
-            .on("data", function (invoice) {
-                callback(invoice)
-            })
+        }, this.meta, function (err, response) {
+           callback(err, response);
 
-            .on("end", function () {
-                console.error("Disconnected from LND");
-
-                process.exit(1);
-            });
+        });
 
     }
 
@@ -61,22 +54,4 @@ class Lightning {
 
 module.exports = {
     Lightning,
-
-    defaultLndPath: function () {
-        let homeDir = os.homedir();
-
-        switch (os.platform()) {
-            case "darwin":
-                return path.join(homeDir, "Library", "Application Support", "Lnd");
-
-            case "win32":
-                return path.join(homeDir, "AppData", "Local", "Lnd");
-
-            default:
-                return path.join(homeDir, ".lnd");
-
-        }
-
-    }
-
 };
