@@ -29,9 +29,10 @@ class Lightning {
         this.lightning = new lnrpc.Lightning(this.grpcHost, creds);
     }
 
-    addInvoice(value, callback) {
+    addInvoice(value, expiry, callback) {
         this.lightning.AddInvoice({
             value: value,
+            expiry: expiry,
 
         }, this.meta, function (err, response) {
             callback(err, response)

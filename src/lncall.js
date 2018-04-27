@@ -8,10 +8,12 @@ const lnd = require("./lnd");
 
 class LND {
 
-    // TODO: custom expiry time
-    constructor (grpcHost, cert, macaroon) {
+    // Expiry in seconds
+    constructor (grpcHost, cert, macaroon, expiry) {
         this.secret = crypto.randomBytes(32).toString("hex");
         this.tokens = [];
+
+        this.expiry = expiry;
 
         this.lightning = new lnd.Lightning(grpcHost, cert, macaroon);
     }
@@ -30,9 +32,6 @@ class LND {
                 if (this.checkToken(req, token)) {
                     if (this.tokens[token] !== undefined) {
                         this.lightning.lookupInvoice(this.tokens[token].r_hash, (err, response) => {
-                            console.log(err);
-                            console.log(response);
-
                             if (err === null) {
                                 if (response.settled) {
                                     delete this.tokens[token];
@@ -55,7 +54,7 @@ class LND {
                     } else {
                         res.status(410);
 
-                        res.send("Token already used");
+                        res.send("Token already used or expired");
                     }
 
                 } else {
@@ -65,9 +64,10 @@ class LND {
                 }
 
             } else {
-                this.newRequest(amount, req, (response, token) => {
+                this.newRequest(amount, this.expiry, req, (response, expiry, token) => {
                     this.tokens[token] = {
                         "r_hash": response.r_hash,
+                        "expiry": expiry,
                     };
 
                     res.status(402);
@@ -75,7 +75,6 @@ class LND {
                     res.set("X-Token", token);
 
                     res.send(response.payment_request);
-
                 });
 
             }
@@ -84,12 +83,16 @@ class LND {
 
     }
 
-    newRequest(amount, req, callback) {
-        this.lightning.addInvoice(amount, (err, response) => {
+    newRequest(amount, expiry, req, callback) {
+        this.lightning.addInvoice(amount, expiry, (err, response) => {
             if (err === null) {
+                let date = new Date();
+
+                date.setTime(date.getTime() + (expiry * 1000));
+
                 let id = response.r_hash.toString("hex");
 
-                callback(response, this.makeToken(req, id));
+                callback(response, date, this.makeToken(req, id));
 
             } else {
                 // TODO: add error handling
@@ -115,6 +118,51 @@ class LND {
             .replace(/\W+/g, '');
 
         return id + "." + hmac;
+    }
+
+    // Clears tokens which were created out of the range of the threshold
+    // Event paid tokens are affected by this method
+    //
+    // Threshold in seconds
+    async clearTokens(threshold) {
+        // Convert threshold to milliseconds
+        threshold = threshold * 1000;
+
+        let date = new Date();
+
+        for (let index in this.tokens) {
+            let token = this.tokens[index];
+
+            let difference = date.getTime() - token.expiry.getTime();
+
+            if (difference > threshold) {
+                delete this.tokens[index];
+            }
+
+        }
+
+    }
+
+    // Clears tokens with unpaid and expired invoices
+    async clearExpiredTokens() {
+        let date = new Date();
+
+        for (let index in this.tokens) {
+            let token = this.tokens[index];
+
+            if (date > token.expiry) {
+                this.lightning.lookupInvoice(token.r_hash, (err, response) => {
+                    if (!response.settled) {
+                        // Invoice is expired and was not paid
+                        delete this.tokens[index];
+                    }
+
+                });
+
+            }
+
+        }
+
     }
 
 }
