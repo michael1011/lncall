@@ -32,7 +32,7 @@ module.exports = {
 
         });
 
-        app.listen(port, host)
+        app.listen(port, host);
 
     }
 

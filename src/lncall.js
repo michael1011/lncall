@@ -50,7 +50,7 @@ class LND {
                                 console.error(err);
                             }
 
-                        })
+                        });
 
                     } else {
                         res.status(410);
@@ -116,7 +116,7 @@ class LND {
 
             .digest()
             .toString("base64")
-            .replace(/\W+/g, '');
+            .replace(/\W+/g, "");
 
         return id + "." + hmac;
     }

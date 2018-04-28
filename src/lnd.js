@@ -45,8 +45,7 @@ class Lightning {
             r_hash: hash,
 
         }, this.meta, function (err, response) {
-           callback(err, response);
-
+            callback(err, response);
         });
 
     }

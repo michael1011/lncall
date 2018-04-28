@@ -6,6 +6,7 @@
   "bin": "src/cli.js",
   "scripts": {
     "getproto": "curl https://raw.githubusercontent.com/lightningnetwork/lnd/6fa93a78c18180a3bc77116b749b3c5e279d5a33/lnrpc/rpc.proto --output src/rpc.proto",
+    "lint": "eslint src example",
     "example": "node example/example.js",
     "start": "node src/cli.js"
   },
@@ -25,5 +26,8 @@
     "express": "^4.16.3",
     "grpc": "^1.10.1",
     "http-proxy": "^1.17.0"
+  },
+  "devDependencies": {
+    "eslint": "^4.19.1"
   }
 }
