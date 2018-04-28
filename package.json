@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "paypercall for LND ",
   "main": "src/lncall.js",
+  "bin": "src/cli.js",
   "scripts": {
     "getproto": "curl https://raw.githubusercontent.com/lightningnetwork/lnd/6fa93a78c18180a3bc77116b749b3c5e279d5a33/lnrpc/rpc.proto --output src/rpc.proto",
-    "start": "node src/lncall.js"
+    "example": "node example/example.js",
+    "start": "node src/cli.js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +20,10 @@
   },
   "homepage": "https://github.com/michael1011/lncall#readme",
   "dependencies": {
-    "grpc": "^1.10.1"
-  },
-  "devDependencies": {
-    "express": "^4.16.3"
+    "command-line-args": "^5.0.2",
+    "command-line-usage": "^5.0.4",
+    "express": "^4.16.3",
+    "grpc": "^1.10.1",
+    "http-proxy": "^1.17.0"
   }
 }

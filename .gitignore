@@ -1,6 +1,9 @@
 # NPM dependencies
 node_modules
 
+# Rates file for testing
+rates.json
+
 # LND proto file
 src/rpc.proto
 

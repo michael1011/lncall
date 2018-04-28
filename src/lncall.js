@@ -31,6 +31,7 @@ class LND {
 
                 if (this.checkToken(req, token)) {
                     if (this.tokens[token] !== undefined) {
+
                         this.lightning.lookupInvoice(this.tokens[token].r_hash, (err, response) => {
                             if (err === null) {
                                 if (response.settled) {

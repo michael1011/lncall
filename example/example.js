@@ -16,9 +16,9 @@ start();
 
 setInterval(() => {
     ln.clearTokens(10);
-    //ln.clearExpiredTokens();
+    ln.clearExpiredTokens();
 
-    console.log("Cleared tokens")
+    console.log("Cleared tokens");
 
 }, 10000);
 
@@ -30,7 +30,7 @@ async function start() {
     }));
 
     app.get('/', function (req, res) {
-        res.send('Hello World!')
+        res.send('Hello World!');
     });
 
     app.listen(3000);

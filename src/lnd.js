@@ -35,7 +35,7 @@ class Lightning {
             expiry: expiry,
 
         }, this.meta, function (err, response) {
-            callback(err, response)
+            callback(err, response);
         });
 
     }
