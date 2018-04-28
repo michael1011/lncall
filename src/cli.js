@@ -130,12 +130,23 @@ async function startProxy() {
         options.upstream = options.upstream.slice(0, -1);
     }
 
-    // TODO: trim first / of rates
     // Override "options.rates" with "options.ratesfile" if possible
     if (options.ratesfile !== undefined) {
         let ratesFile = fs.readFileSync(options.ratesfile);
 
         options.rates = JSON.parse(ratesFile);
+    }
+
+    // The first char of a rate has to be a "/"
+    for (let rate in options.rates) {
+        if (options.rates.hasOwnProperty(rate)) {
+            if (rate.charAt(0) !== "/") {
+                options.rates["/" + rate] = options.rates[rate];
+
+                delete options.rates[rate];
+            }
+        }
+
     }
 
     let ln = new lncall.LND(options.grpc, options.cert, options.macaroon, options.expiry);

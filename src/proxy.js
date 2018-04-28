@@ -18,7 +18,6 @@ module.exports = {
         let proxyServer = httpProxy.createProxyServer();
 
         app.use("/", function (req, res) {
-            // TODO: trim first /
             let price = rates[req.url];
 
             if (price !== undefined) {
