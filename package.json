@@ -1,11 +1,14 @@
 {
   "name": "lncall",
-  "version": "1.0.0",
-  "description": "paypercall for LND ",
-  "main": "src/lncall.js",
-  "bin": "src/cli.js",
+  "version": "1.0.1",
+  "description": "monetize your API with LND",
+  "main": "./src/lncall.js",
+  "bin": {
+    "lncall": "./src/cli.js"
+  },
   "scripts": {
     "getproto": "curl https://raw.githubusercontent.com/lightningnetwork/lnd/6fa93a78c18180a3bc77116b749b3c5e279d5a33/lnrpc/rpc.proto --output src/rpc.proto",
+    "install": "npm run getproto",
     "lint": "eslint src example",
     "example": "node example/example.js",
     "start": "node src/cli.js"
@@ -14,6 +17,11 @@
     "type": "git",
     "url": "git+https://github.com/michael1011/lncall.git"
   },
+  "keywords": [
+    "bitcoin",
+    "lightning",
+    "lnd"
+  ],
   "author": "michael1011",
   "license": "MIT",
   "bugs": {

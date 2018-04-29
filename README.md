@@ -1,4 +1,4 @@
-# lncall [![dependencies status](https://david-dm.org/michael1011/lncall/status.svg)](https://david-dm.org/michael1011/lncall)
+# lncall [![npm](https://img.shields.io/npm/v/lncall.svg)](https://www.npmjs.com/package/lncall) [![dependencies status](https://david-dm.org/michael1011/lncall/status.svg)](https://david-dm.org/michael1011/lncall)
 Monetize your API with the [Lightning Network Daemon](https://github.com/lightningnetwork/lnd). This project is literally the same as [paypercall](https://github.com/ElementsProject/paypercall) but for LND instead of c-lightning.
 
 lncall can be used as library for node.js or as reverse proxy for your existing API.
