@@ -29,7 +29,7 @@ class LND {
             if (req.get("X-Token") !== undefined) {
                 let token = req.get("X-Token");
 
-                if (this.checkToken(req, token)) {
+                if (this.checkToken(req.method, req.path, token)) {
                     if (this.tokens[token] !== undefined) {
 
                         this.lightning.lookupInvoice(this.tokens[token].r_hash, (err, response) => {
@@ -84,6 +84,8 @@ class LND {
 
     }
 
+    // Amount is in Satoshis
+    // Expiry in seconds
     newRequest(amount, expiry, req, callback) {
         this.lightning.addInvoice(amount, expiry, (err, response) => {
             if (err === null) {
@@ -104,15 +106,15 @@ class LND {
 
     }
 
-    checkToken(req, token) {
+    checkToken(method, path, token) {
         let id = token.split(".")[0];
 
-        return token === this.makeToken(req, id);
+        return token === this.makeToken(method, path, id);
     }
 
-    makeToken(req, id) {
+    makeToken(method, path, id) {
         let hmac = crypto.createHmac("sha256", this.secret)
-            .update([id, req.method, req.path].join(" "))
+            .update([id, method, path].join(" "))
 
             .digest()
             .toString("base64")
@@ -125,19 +127,22 @@ class LND {
     // Event paid tokens are affected by this method
     //
     // Threshold in seconds
-    async clearTokens(threshold) {
+    clearTokens(tokens, threshold) {
         // Convert threshold to milliseconds
         threshold = threshold * 1000;
 
         let date = new Date();
 
-        for (let index in this.tokens) {
-            let token = this.tokens[index];
+        for (let index in tokens) {
+            if (tokens.hasOwnProperty(index)) {
+                let token = tokens[index];
 
-            let difference = date.getTime() - token.expiry.getTime();
+                let difference = date.getTime() - token.expiry.getTime();
 
-            if (difference > threshold) {
-                delete this.tokens[index];
+                if (difference > threshold) {
+                    delete tokens[index];
+                }
+
             }
 
         }
@@ -145,20 +150,23 @@ class LND {
     }
 
     // Clears tokens with unpaid and expired invoices
-    async clearExpiredTokens() {
+    clearExpiredTokens(tokens) {
         let date = new Date();
 
-        for (let index in this.tokens) {
-            let token = this.tokens[index];
+        for (let index in tokens) {
+            if (tokens.hasOwnProperty(index)) {
+                let token = tokens[index];
 
-            if (date > token.expiry) {
-                this.lightning.lookupInvoice(token.r_hash, (err, response) => {
-                    if (!response.settled) {
-                        // Invoice is expired and was not paid
-                        delete this.tokens[index];
-                    }
+                if (date > token.expiry) {
+                    this.lightning.lookupInvoice(token.r_hash, (err, response) => {
+                        if (!response.settled) {
+                            // Invoice is expired and was not paid
+                            delete tokens[index];
+                        }
 
-                });
+                    });
+
+                }
 
             }
 

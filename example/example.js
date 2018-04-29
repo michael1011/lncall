@@ -15,8 +15,7 @@ let ln = new lncall.LND("localhost:10009",
 start();
 
 setInterval(() => {
-    ln.clearTokens(10);
-    ln.clearExpiredTokens();
+    ln.clearExpiredTokens(ln.tokens);
 
     console.log("Cleared tokens");
 
