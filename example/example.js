@@ -24,7 +24,7 @@ setInterval(() => {
 async function start() {
     await ln.connect();
 
-    app.post("/test", ln.middleware(10, (req, res) => {
+    app.get("/test", ln.middleware(10, (req, res) => {
         res.send("Success!");
     }));
 

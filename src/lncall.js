@@ -46,8 +46,10 @@ class LND {
                                 }
 
                             } else {
-                                // TODO: add error handling
                                 console.error(err);
+
+                                res.status(500);
+                                res.send("Failed to check if invoice was paid");
                             }
 
                         });
@@ -65,17 +67,24 @@ class LND {
                 }
 
             } else {
-                this.newRequest(amount, this.expiry, req, (response, expiry, token) => {
-                    this.tokens[token] = {
-                        "r_hash": response.r_hash,
-                        "expiry": expiry,
-                    };
+                this.newRequest(amount, this.expiry, req, (err, response, expiry, token) => {
+                    if (err === null) {
+                        this.tokens[token] = {
+                            "r_hash": response.r_hash,
+                            "expiry": expiry,
+                        };
 
-                    res.status(402);
-                    res.type("application/vnd.lightning.bolt11");
-                    res.set("X-Token", token);
+                        res.status(402);
+                        res.type("application/vnd.lightning.bolt11");
+                        res.set("X-Token", token);
 
-                    res.send(response.payment_request);
+                        res.send(response.payment_request);
+
+                    } else {
+                        res.status(500);
+                        res.send("Failed to generate invoice");
+                    }
+
                 });
 
             }
@@ -95,11 +104,12 @@ class LND {
 
                 let id = response.r_hash.toString("hex");
 
-                callback(response, date, this.makeToken(req, id));
+                callback(err, response, date, this.makeToken(req, id));
 
             } else {
-                // TODO: add error handling
                 console.error(err);
+
+                callback(err, null, null, null);
             }
 
         });
