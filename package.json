@@ -1,6 +1,6 @@
 {
   "name": "lncall",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "monetize your API with LND",
   "main": "./src/lncall.js",
   "bin": {
